@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.24.2/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/papeibrahimadiawara/Downloads/Base_Project_Wolf/Base_Project/Project_SDL_Part1_base
+CMAKE_SOURCE_DIR = "/Users/papeibrahimadiawara/Downloads/Base_Project 2"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/papeibrahimadiawara/Downloads/Base_Project_Wolf/Base_Project/Project_SDL_Part1_base
+CMAKE_BINARY_DIR = "/Users/papeibrahimadiawara/Downloads/Base_Project 2"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/papeibrahimadiawara/Downloads/Base_Project_Wolf/Base_Project/Project_SDL_Part1_base/CMakeFiles /Users/papeibrahimadiawara/Downloads/Base_Project_Wolf/Base_Project/Project_SDL_Part1_base//CMakeFiles/progress.marks
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/papeibrahimadiawara/Downloads/Base_Project_Wolf/Base_Project/Project_SDL_Part1_base/CMakeFiles 0
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(CMAKE_COMMAND) -E cmake_progress_start "/Users/papeibrahimadiawara/Downloads/Base_Project 2/CMakeFiles" "/Users/papeibrahimadiawara/Downloads/Base_Project 2/Project_SDL_Part1_base//CMakeFiles/progress.marks"
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project_SDL_Part1_base/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/papeibrahimadiawara/Downloads/Base_Project 2/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project_SDL_Part1_base/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,30 +103,31 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project_SDL_Part1_base/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project_SDL_Part1_base/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named SDL_part1
+# Convenience name for target.
+Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/rule:
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/rule
+.PHONY : Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/rule
 
-# Build rule for target.
-SDL_part1: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 SDL_part1
+# Convenience name for target.
+SDL_part1: Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/rule
 .PHONY : SDL_part1
 
 # fast build rule for target.
 SDL_part1/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_part1.dir/build.make CMakeFiles/SDL_part1.dir/build
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/build.make Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/build
 .PHONY : SDL_part1/fast
 
 Project_SDL1.o: Project_SDL1.cpp.o
@@ -134,7 +135,7 @@ Project_SDL1.o: Project_SDL1.cpp.o
 
 # target to build an object file
 Project_SDL1.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_part1.dir/build.make CMakeFiles/SDL_part1.dir/Project_SDL1.cpp.o
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/build.make Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/Project_SDL1.cpp.o
 .PHONY : Project_SDL1.cpp.o
 
 Project_SDL1.i: Project_SDL1.cpp.i
@@ -142,7 +143,7 @@ Project_SDL1.i: Project_SDL1.cpp.i
 
 # target to preprocess a source file
 Project_SDL1.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_part1.dir/build.make CMakeFiles/SDL_part1.dir/Project_SDL1.cpp.i
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/build.make Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/Project_SDL1.cpp.i
 .PHONY : Project_SDL1.cpp.i
 
 Project_SDL1.s: Project_SDL1.cpp.s
@@ -150,7 +151,7 @@ Project_SDL1.s: Project_SDL1.cpp.s
 
 # target to generate assembly for a file
 Project_SDL1.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_part1.dir/build.make CMakeFiles/SDL_part1.dir/Project_SDL1.cpp.s
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/build.make Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/Project_SDL1.cpp.s
 .PHONY : Project_SDL1.cpp.s
 
 main.o: main.cpp.o
@@ -158,7 +159,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_part1.dir/build.make CMakeFiles/SDL_part1.dir/main.cpp.o
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/build.make Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -166,7 +167,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_part1.dir/build.make CMakeFiles/SDL_part1.dir/main.cpp.i
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/build.make Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -174,7 +175,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_part1.dir/build.make CMakeFiles/SDL_part1.dir/main.cpp.s
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(MAKE) $(MAKESILENT) -f Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/build.make Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -203,6 +204,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd "/Users/papeibrahimadiawara/Downloads/Base_Project 2" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

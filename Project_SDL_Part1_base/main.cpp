@@ -1,5 +1,3 @@
-/*Pape Ibrahima diawara*/
-
 #include "Project_SDL1.h"
 #include <stdio.h>
 #include <string>

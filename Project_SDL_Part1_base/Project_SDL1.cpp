@@ -1,6 +1,4 @@
-// SDL_Test.cpp: Definiert den Einstiegspunkt für die Anwendung.
-/*Pape Ibrahima diawara*/
-
+﻿// SDL_Test.cpp: Definiert den Einstiegspunkt für die Anwendung.
 //
 
 #include "Project_SDL1.h"
@@ -78,15 +76,22 @@ SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, frame_width, frame_height,
 
   gameGround = std::make_unique<ground>(window_surface_ptr_);
 
+  //First add player
+  gameGround->add_player();
+  //Then add dog
+  gameGround->add_shepherd_dog();
+
+
   for(int i = 0; i < n_sheep; ++i)
   {
-    gameGround->add_animal(0);
+    gameGround->add_animal(0, {0,0}, true);
   }
 
   for(int i = 0; i < n_wolf; ++i)
   {
-    gameGround->add_animal(1);
+    gameGround->add_animal(1, {0,0}, true);
   }
+
 
 }
 
@@ -115,12 +120,53 @@ int application::loop(unsigned period) {
     unsigned int startTick = SDL_GetTicks();
 
     SDL_Event e;
-    if(SDL_PollEvent(&e))
+    int mouse_x = 0, mouse_y = 0;
+
+    int ix = 0, iy = 0;
+    while(SDL_PollEvent(&e))
     {
       //Quit
       if(e.type == SDL_QUIT)
       {
+        isRunning = false;
         break;
+      }
+      else if(e.type == SDL_KEYDOWN)
+      {
+        switch(e.key.keysym.sym)
+        {
+          case SDLK_LEFT:
+            ix = -1;
+            break;
+          case SDLK_RIGHT:
+            ix = 1;
+            break;
+          case SDLK_DOWN:
+            iy = 1;
+            break;
+          case SDLK_UP:
+            iy = -1;
+            break;
+          default:
+            ix =0;
+            iy =0;
+            break;
+        }
+        gameGround->setPlayerInput(ix, iy);
+      }
+      else if(e.type == SDL_KEYUP)
+      {
+        gameGround->setPlayerInput(0,0);
+      }
+      else if(e.type == SDL_MOUSEBUTTONDOWN)
+      {
+        SDL_GetMouseState(&mouse_x, &mouse_y);
+        std::cout << "mouse" << std::endl;
+        if(e.button.button == SDL_BUTTON_LEFT)
+        {
+          gameGround->setMouseInput(mouse_x, mouse_y);
+          std::cout << "mouse left"  << std::endl;
+        }
       }
     }
 
@@ -150,6 +196,9 @@ int application::loop(unsigned period) {
     // Application time limit
     if(endTick - firstTick > (period + 5) * 1000)
     {
+
+      std::cout << "SCORE: "<< gameGround->getScore() << std::endl;
+
       isRunning = false;
     }
     //std::cout << "FPS: " << std::to_string(1.0f / frameTime) << std::endl;
@@ -174,44 +223,114 @@ ground::~ground()
 /// Function to create animals randomly in the ground
 /// </summary>
 /// <param name="id"> Animal type 0 : sheep, 1 : wolf</param>
-void ground::add_animal(int id)
+void ground::add_animal(int id, Vec2 pos, bool random)
 {
-
+  if(allAnimals.size() >= MAX_ANIMALS) return;
   if(id == 0)
   {
+
     std::shared_ptr<sheep> newSheep =
-      std::make_shared<sheep>(sheepSpritePath,window_surface_ptr_);
+      std::make_shared<sheep>(window_surface_ptr_, sheepSpritePath);
     newSheep->setSize(animal_size, animal_size);
     int hw = newSheep->getWidth();
     int hh = newSheep->getHeight();
     int randomX =  hw + frame_boundary + (std::rand() % (frame_width - frame_boundary - hw));
     int randomY = hh + frame_boundary + (std::rand() % (frame_height - frame_boundary - hh));
+    if(random)
     newSheep->setPos( randomX, randomY);
-    newSheep->setSpeed( -2 + (std::rand() % sheepSpeed), -2 +  (std::rand() % sheepSpeed) );
+    else
+      newSheep->setPos(pos.x, pos.y);
 
-    sheeps.push_back(newSheep);
+    newSheep->randomizeSpeed(-sheepSpeed, sheepSpeed);
+
+    sheeps.insert(newSheep);
+    allAnimals.insert(newSheep);
   }
   else if(id == 1)
   {
-    std::shared_ptr<wolf> newWolf = std::make_shared<wolf>(wolfSpritePath, window_surface_ptr_);
+    std::shared_ptr<wolf> newWolf = std::make_shared<wolf>(window_surface_ptr_, wolfSpritePath);
     newWolf->setSize(animal_size, animal_size);
     int hw = newWolf->getWidth();
     int hh = newWolf->getHeight();
     int randomX =  hw + frame_boundary + (std::rand() % (frame_width - frame_boundary - hw));
     int randomY = hh + frame_boundary + (std::rand() % (frame_height - frame_boundary - hh));
 
+    if(random)
     newWolf->setPos(randomX, randomY);
-    newWolf->setSpeed(0, 0);
-
-    wolves.push_back(newWolf);
-  }
-  //For wolves to track sheep
-  for(auto wolf : wolves)
-  {
-    for(auto sheep : sheeps)
-    {
-      wolf->addSheepToTrack(sheep);
+    else {
+      newWolf->setPos(pos.x, pos.y);
     }
+    newWolf->randomizeSpeed(-wolfSpeed, wolfSpeed);
+    newWolf->setDog(dog);
+
+    wolves.insert(newWolf);
+    allAnimals.insert(newWolf);
+  }
+
+  std::vector<std::shared_ptr<MovingObject>> preyList;
+  for(auto a : allAnimals)
+  {
+    if(a->hasTag("prey"))
+    {
+      preyList.push_back(a);
+    }
+  }
+
+  //Update all the hunters for now just wolf
+  for(auto w : wolves)
+  {
+    w->setPreyList(preyList);
+  }
+
+
+
+
+}
+
+void ground::add_player()
+{
+  player = std::make_shared<Player>(window_surface_ptr_, playerSpritePath);
+  player->setSize(player_size, player_size);
+
+
+}
+
+void ground::add_shepherd_dog()
+{
+  dog = std::make_shared<Dog>(window_surface_ptr_, dogSpritePath);
+  dog->setSize(animal_size, animal_size);
+
+  dog->setRoundCenter(player);
+  allAnimals.insert(dog);
+}
+
+void ground::setPlayerInput(int ix, int iy)
+{
+  int sqt = std::sqrt(ix*ix + iy*iy);
+  int dx = sqt == 0 ? 0 : ix / sqt;
+  int dy = sqt == 0 ? 0 : iy / sqt;
+
+  player->setSpeed(dx*playerSpeed, dy*playerSpeed);
+}
+
+void ground::setMouseInput(int x, int y)
+{
+  //Check if clicked inside playArea
+  if(x < frame_boundary ||
+     x >= frame_width-frame_boundary) return;
+  if(y < frame_boundary ||
+     y >= frame_height-frame_boundary) return;
+  int dist = dog->getDistTo({x, y});
+  if(dist < CLICK_DISTANCE && !commandingUnit)
+  {
+    std::cout << dist << "click distance" << std::endl;
+    dog->startCommand();
+    commandingUnit = true;
+  }
+  else
+  {
+    dog->endCommand({x, y});
+    commandingUnit = false;
   }
 }
 
@@ -222,29 +341,223 @@ void ground::update()
 {
   SDL_FillRect(window_surface_ptr_, NULL, 0x02AA02);
 
-  //Update the animals
-  for(auto sheep : sheeps)
+  //Set dog to round the player
+
+  for(auto a : allAnimals)
   {
-    sheep->move();
-    sheep->draw();
+    a->move();
+    a->draw();
   }
 
-  for(auto wolf : wolves)
+  player->move();
+  player->draw();
+
+
+  remove_dead_animals();
+
+  //Only breed sheep for now
+  //
+  add_new_animals();
+
+
+
+}
+
+void ground::remove_dead_animals()
+{
+  bool dead = false;
+
+  std::vector<std::shared_ptr<MovingObject>> animalRm;
+  for(auto a : allAnimals)
   {
-    wolf->move();
-    wolf->draw();
+    if(a->hasTag("dead"))
+    {
+      animalRm.push_back(a);
+      dead = true;
+    }
+  }
+  for(auto x : animalRm)
+  {
+    allAnimals.erase(x);
+  }
+
+  if(dead)
+  {
+    std::vector<std::shared_ptr<wolf>> wolfRm;
+    for(auto a : wolves)
+    {
+      if(a->hasTag("dead"))
+      {
+        wolfRm.push_back(a);
+      }
+    }
+
+    for(auto x : wolfRm)
+    {
+      wolves.erase(x);
+    }
+    std::vector<std::shared_ptr<sheep>> sheepRm;
+    for(auto a : sheeps)
+    {
+      if(a->hasTag("dead"))
+      {
+        sheepRm.push_back(a);
+      }
+    }
+
+    for(auto x : sheepRm)
+    {
+      sheeps.erase(x);
+    }
+    std::vector<std::shared_ptr<MovingObject>> preyList;
+    for(auto a : allAnimals)
+    {
+      if(a->hasTag("prey"))
+      {
+        preyList.push_back(a);
+      }
+    }
+
+    //Update all the hunters for now just wolf
+    for(auto w : wolves)
+    {
+      w->setPreyList(preyList);
+    }
+  }
+  else
+  {
+    return;
+  }
+
+
+
+}
+
+
+void ground::add_new_animals()
+{
+  for(auto a : allAnimals)
+  {
+    for(auto b : allAnimals)
+    {
+      if(a->getDistTo(b->getPos()) < INTERACT_DISTANCE &&
+         a->hasTag("female") && b->hasTag("male"))
+      {
+        a->interact(b);
+      }
+    }
+  }
+
+  std::vector<std::pair<int,Vec2>> addPositions;
+  for(auto a : allAnimals)
+  {
+    //only sheep for now
+    if(a->hasTag("child") && a->hasTag("sheep"))
+    {
+      a->removeTag("child");
+      addPositions.push_back({0, a->getPos()});
+    }
+  }
+
+  for(auto v : addPositions){
+    add_animal(v.first, v.second);
   }
 }
 
-//Animal
-animal::animal(const std::string& filePath, SDL_Surface* window_surface_ptr)
-  : window_surface_ptr_(window_surface_ptr) {
-  image_ptr_ = load_surface_for(filePath, window_surface_ptr);
+
+void Interactable::addTag(const std::string& tag)
+{
+  if(!hasTag(tag))
+  tags.insert(tag);
+}
+
+bool Interactable::hasTag(const std::string& tag)
+{
+  return tags.find(tag) != tags.end();
+}
+
+void Interactable::removeTag(const std::string& tag)
+{
+  if(hasTag(tag))
+  {
+    tags.erase(tag);
+  }
+}
+
+void Interactable::interact(std::shared_ptr<Interactable> other)
+{
+}
+
+Interactable::~Interactable()
+{
+
+}
+
+RenderedObject::RenderedObject(SDL_Surface* window_surface_ptr, const std::string& textureFile) {
+  window_surface_ptr_ = window_surface_ptr;
+  image_ptr_ = load_surface_for(textureFile, window_surface_ptr);
 
   animalRect.w = image_ptr_->w;
   animalRect.h = image_ptr_->h;
   animalRect.x = 0;
   animalRect.y = 0;
+}
+
+RenderedObject::~RenderedObject()
+{
+
+}
+
+void RenderedObject::draw()
+{
+  SDL_Rect rect;
+  rect.x = x;
+  rect.y = y;
+  rect.w = w;
+  rect.h = h;
+  SDL_BlitScaled(image_ptr_, 0, window_surface_ptr_, &rect);
+}
+
+
+void RenderedObject::setPos(int x, int y)
+{
+  this->x = x;
+  this->y = y;
+}
+
+void RenderedObject::setSize(int w, int h)
+{
+  this->w = w;
+  this->h = h;
+}
+
+
+MovingObject::MovingObject(SDL_Surface* window_surface_ptr, const std::string& textureFile)
+  : RenderedObject(window_surface_ptr, textureFile)
+{
+
+}
+
+MovingObject::~MovingObject()
+{
+
+}
+
+void MovingObject::move()
+{
+
+}
+
+void MovingObject::setSpeed(int x, int y)
+{
+  xSpeed = x;
+  ySpeed = y;
+}
+
+//Animal
+animal::animal(SDL_Surface* window_surface_ptr, const std::string& filePath)
+  : MovingObject(window_surface_ptr, filePath) {
+
 }
 
 animal::~animal()
@@ -253,34 +566,24 @@ animal::~animal()
 }
 
 // Draw the respective animal
-void animal::draw()
-{
-  SDL_Rect rect;
-  rect.x = x;
-  rect.y = y;
-  rect.w = w;
-  rect.h = h;
-  SDL_BlitSurface(image_ptr_, &animalRect, window_surface_ptr_, &rect);
+
+
+sheep::sheep(SDL_Surface* window_surface_ptr, const std::string& filePath)
+: animal( window_surface_ptr, filePath){
+  addTag("sheep");
+
+  addTag("prey");
+
+  if(rand() % 100 < 50)
+  {
+    addTag("female");
+    std::cout << "Sheep spawned: gender->female" << std::endl;
+  }
+  else {
+    addTag("male");
+    std::cout << "Sheep spawned: gender->male" << std::endl;
+  }
 }
-
-
-void animal::setPos(int x, int y)
-{
-  this->x = x;
-  this->y = y;
-}
-
-void animal::setSize(int w, int h)
-{
-  this->w = w;
-  this->h = h;
-}
-
-
-sheep::sheep(const std::string& filePath, SDL_Surface* window_surface_ptr)
-: animal(filePath, window_surface_ptr){
-}
-
 sheep::~sheep()
 {
 
@@ -292,28 +595,29 @@ void sheep::move()
 {
   //Boundary of the ground horizontal
   //Velocity is reversed with random bounce
-  if(x > frame_width-frame_boundary)
+  int reboundrand = -sheepSpeed + (std::rand() % (2*sheepSpeed));
+  if(x >= frame_width-frame_boundary)
   {
     x = frame_width-frame_boundary-2;
-    setSpeed(-xSpeed, (std::rand() % 2) * sheepSpeed);
+    setSpeed(-xSpeed, reboundrand);
   }
-  else if(x < frame_boundary)
+  else if(x <= frame_boundary)
   {
     x = frame_boundary+2;
-    setSpeed(-xSpeed, (std::rand() % 2) * sheepSpeed);
+    setSpeed(-xSpeed, reboundrand);
   }
 
   //Boundary of the ground vertical
   // Velocity is reversed with random bounce
-  if(y > frame_height-frame_boundary)
+  if(y >= frame_height-frame_boundary)
   {
     y = frame_height-frame_boundary-2;
-    setSpeed((std::rand() % 2) * sheepSpeed, -ySpeed);
+    setSpeed(reboundrand, -ySpeed);
   }
-  else if(y < frame_boundary)
+  else if(y <= frame_boundary)
   {
     y = frame_boundary + 2;
-    setSpeed((std::rand() % 2) * sheepSpeed, -ySpeed);
+    setSpeed(reboundrand, -ySpeed);
   }
 
   //Set the position according to the speed
@@ -321,14 +625,22 @@ void sheep::move()
 
 }
 
-void sheep::setSpeed(int x, int y)
+void sheep::interact(std::shared_ptr<Interactable> other)
 {
-  xSpeed = x;
-  ySpeed = y;
+  if(other->hasTag("sheep") && other->hasTag("male") && hasTag("female"))
+  {
+    auto now = SDL_GetTicks();
+    if(now - lastChild < BREED_MS) return;
+    addTag("child");
+    //std::cout << "Sheep pregnant!" << std::endl;
+    lastChild = now;
+  }
 }
 
-wolf::wolf(const std::string& filePath, SDL_Surface* window_surface_ptr)
-  : animal(filePath, window_surface_ptr){
+
+wolf::wolf(SDL_Surface* window_surface_ptr, const std::string& filePath)
+  : animal(window_surface_ptr, filePath){
+  addTag("wolf");
 }
 
 wolf::~wolf() {
@@ -337,53 +649,213 @@ wolf::~wolf() {
 
 // Wolf follows nearest sheep
 void wolf::move() {
-  if(allSheep.size() == 0) return;
+  int now = SDL_GetTicks();
 
-
-
-
-  std::shared_ptr<sheep> nearestSheep;
-  int minDist = 1000000;
-  for(auto sheep : allSheep)
+  if(now - lastFood > STARVE_MS)
   {
-    int p = (sheep->getX() - x);
-    int q = (sheep->getY() - y);
-    int dist = (p*p) + (q*q);
+    addTag("dead");
+    return;
+  }
+
+  if(dog == nullptr)
+  {
+    std::cout << "DOG an Wolf creation order wrong!" << std::endl;
+    return;
+  }
+  Vec2 dogPos = dog->getPos();
+  int dogdx = dogPos.x - x;
+  int dogdy = dogPos.y - y;
+  int dogDist = (dogdx * dogdx) + (dogdy * dogdy);
+
+  if(dogdx > 0) dogdx = 1;
+  else if(dogdx < 0) dogdx = -1;
+  else dogdx = 0;
+
+  if(dogdy > 0) dogdy = 1;
+  else if(dogdy < 0) dogdy = -1;
+  else dogdy = 0;
+
+  if(std::sqrt(dogDist) < 100)
+  {
+    setSpeed(-dogdx * wolfSpeed, -dogdy * wolfSpeed);
+    setPos(x+xSpeed, y+ySpeed);
+    //std::cout << "Dog close!" << std::endl;
+    return;
+  }
+
+  // Dog not close
+
+  if(preyList.size() == 0) {
+    //Boundary of the ground horizontal
+    //Velocity is reversed with random bounce
+    int reboundrand = -wolfSpeed + (std::rand() % (2 * wolfSpeed));
+    if(x >= frame_width-frame_boundary)
+    {
+      x = frame_width-frame_boundary-2;
+      setSpeed(-xSpeed, reboundrand);
+    }
+    else if(x <= frame_boundary)
+    {
+      x = frame_boundary+2;
+      setSpeed(-xSpeed, reboundrand);
+    }
+
+    //Boundary of the ground vertical
+    // Velocity is reversed with random bounce
+    if(y >= frame_height-frame_boundary)
+    {
+      y = frame_height-frame_boundary-2;
+      setSpeed(reboundrand, -ySpeed);
+    }
+    else if(y <= frame_boundary)
+    {
+      y = frame_boundary + 2;
+      setSpeed( reboundrand, -ySpeed);
+    }
+
+    //Set the position according to the speed
+    setPos(x+xSpeed, y+ySpeed);
+
+    return;
+  }
+
+
+  //Find the sheep
+  std::shared_ptr<MovingObject> nearest;
+  int minDist = 1000000;
+  for(auto prey : preyList)
+  {
+    int dist = getDistTo(prey->getPos());
     if(minDist > dist)
     {
       minDist = dist;
-      nearestSheep = sheep;
+      nearest = prey;
     }
   }
 
   // Calculate directions to nearest sheep
-  int dX = nearestSheep->getX() - x + nearestSheep->getWidth();
+  int dX = nearest->getX() - x ;// + nearestSheep->getWidth();
   if(dX > 0) dX = 1;
   else if(dX < 0) dX = -1;
   else dX = 0;
-  int dY = nearestSheep->getY() - y + nearestSheep->getHeight();
+  int dY = nearest->getY() - y;// + nearestSheep->getHeight();
   if(dY > 0) dY = 1;
   else if(dY < 0) dY = -1;
   else dY = 0;
 
   
-  if(dX != 0 && dY != 0)
+  if(dX != 0 || dY != 0)
   {
     setSpeed(dX * wolfSpeed, dY * wolfSpeed);
     setPos(x+xSpeed, y+ySpeed);
-  }
-  else {
-  }
 
+  }
+  if(minDist < HUNT_DISTANCE)
+  {
+    interact(nearest);
+    lastFood = now;
+  }
 }
 
-void wolf::setSpeed(int x, int y) {
-  xSpeed = x;
-  ySpeed = y;
-}
-
-//Sheeps to track for wolves
-void wolf::addSheepToTrack(std::shared_ptr<sheep> sheep)
+void wolf::interact(std::shared_ptr<Interactable> other)
 {
-  allSheep.push_back(sheep);
+  if(other->hasTag("prey"))
+  {
+    if(!other->hasTag("dead"))
+    other->addTag("dead");
+  }
+}
+
+
+
+
+
+Player::Player(SDL_Surface* window_surface_ptr, const std::string& filePath)
+  : MovingObject(window_surface_ptr, filePath)
+{
+  addTag("player");
+}
+
+void Player::move()
+{
+  //TAKE input from player to move player
+  int nx = x+xSpeed;
+  int ny = y+ySpeed;
+  if(nx > frame_width - frame_boundary) nx = frame_width - frame_boundary;
+  else if(nx < frame_boundary)  nx = frame_boundary;
+
+  if(ny > frame_height - frame_boundary) ny = frame_height - frame_boundary;
+  else if(ny < frame_boundary) ny = frame_boundary;
+  setPos(nx, ny);
+
+}
+
+Dog::Dog(SDL_Surface* window_surface_ptr, const std::string& filePath)
+  : animal(window_surface_ptr, filePath)
+{
+  addTag("dog");
+}
+
+void Dog::move()
+{
+  if(moveCommand)
+  {
+    int dx = targetPos.x - x;
+    int dy = targetPos.y - y;
+
+    float dist = std::sqrt((dx * dx) + (dy * dy));
+
+    if(dist <= 5)
+    {
+      moveCommand = false;
+      moveBack = true;
+      return;
+    }
+    if(dx > 0) dx = 1;
+    else if(dx < 0) dx = -1;
+    else dx = 0;
+    if(dy > 0) dy = 1;
+    else if(dy < 0) dy = -1;
+    else dy = 0;
+
+    setSpeed(dx * dogSpeed, dy * dogSpeed);
+    setPos(x+xSpeed, y+ySpeed);
+  }
+  else if(moveBack)
+  {
+    int dx = roundCenter->getX() - x;
+    int dy = roundCenter->getY() - y;
+
+    float dist = std::sqrt((dx * dx) + (dy * dy));
+
+    if(dist <= radius)
+    {
+      moveBack = false;
+      return;
+    }
+
+    if(dx > 0) dx = 1;
+    else if(dx < 0) dx = -1;
+    else dx = 0;
+    if(dy > 0) dy = 1;
+    else if(dy < 0) dy = -1;
+    else dy = 0;
+
+    setSpeed(dx * dogSpeed, dy * dogSpeed);
+    setPos(x+xSpeed, y+ySpeed);
+  }
+  else
+  {
+    float speed = dogRot;
+    int lx = radius * std::cos(angle);
+    int ly = radius * std::sin(angle);
+
+    angle += speed;
+    if(angle == 360.0f) angle = 0.0f;
+    if(angle == -360.0f) angle = 0.0f;
+
+    setPos(lx + roundCenter->getX(), ly + roundCenter->getY());
+  }
+
+
 }
