@@ -223,7 +223,7 @@ private:
 public:
   ground(SDL_Surface* window_surface_ptr); // todo: Ctor
   ~ground(); // todo: Dtor, again for clean up (if necessary)
-  void add_animal(int id, Vec2 pos = {0, 0}, bool random = false); // todo: Add an animal
+  template<typename animal>void add_animal(char* sprite, int speed, Vec2 pos = {0, 0}, bool random = false); // todo: Add an animal
   void update(); // todo: "refresh the screen": Move animals and draw them
   // Possibly other methods, depends on your implementation
   void add_player();

@@ -84,12 +84,12 @@ SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, frame_width, frame_height,
 
   for(int i = 0; i < n_sheep; ++i)
   {
-    gameGround->add_animal(0, {0,0}, true);
+    gameGround->add_animal<sheep>(sheepSpritePath, sheepSpeed, {0,0}, true);
   }
 
   for(int i = 0; i < n_wolf; ++i)
   {
-    gameGround->add_animal(1, {0,0}, true);
+    gameGround->add_animal<wolf>(wolfSpritePath, wolfSpeed, {0,0}, true);
   }
 
 
@@ -223,64 +223,88 @@ ground::~ground()
 /// Function to create animals randomly in the ground
 /// </summary>
 /// <param name="id"> Animal type 0 : sheep, 1 : wolf</param>
-void ground::add_animal(int id, Vec2 pos, bool random)
+template<class A>
+void ground::add_animal<A>(const char* sprite, const int speed, Vec2 pos, bool random)
 {
   if(allAnimals.size() >= MAX_ANIMALS) return;
-  if(id == 0)
-  {
+  std::shared_ptr<animal> newAnimal =
+  std::make_shared<animal>(window_surface_ptr_, sprite);
+  newSheep->setSize(animal_size, animal_size);
+  int hw = newAnimal->getWidth();
+  int hh = newAnimal->getHeight();
+  int randomX =  hw + frame_boundary + (std::rand() % (frame_width - frame_boundary - hw));
+  int randomY = hh + frame_boundary + (std::rand() % (frame_height - frame_boundary - hh));
+  if(random)
+  newAnimal->setPos( randomX, randomY);
+  else
+  newAnimal->setPos(pos.x, pos.y);
 
-    std::shared_ptr<sheep> newSheep =
-      std::make_shared<sheep>(window_surface_ptr_, sheepSpritePath);
-    newSheep->setSize(animal_size, animal_size);
-    int hw = newSheep->getWidth();
-    int hh = newSheep->getHeight();
-    int randomX =  hw + frame_boundary + (std::rand() % (frame_width - frame_boundary - hw));
-    int randomY = hh + frame_boundary + (std::rand() % (frame_height - frame_boundary - hh));
-    if(random)
-    newSheep->setPos( randomX, randomY);
-    else
-      newSheep->setPos(pos.x, pos.y);
-
-    newSheep->randomizeSpeed(-sheepSpeed, sheepSpeed);
-
-    sheeps.insert(newSheep);
-    allAnimals.insert(newSheep);
-  }
-  else if(id == 1)
-  {
-    std::shared_ptr<wolf> newWolf = std::make_shared<wolf>(window_surface_ptr_, wolfSpritePath);
-    newWolf->setSize(animal_size, animal_size);
-    int hw = newWolf->getWidth();
-    int hh = newWolf->getHeight();
-    int randomX =  hw + frame_boundary + (std::rand() % (frame_width - frame_boundary - hw));
-    int randomY = hh + frame_boundary + (std::rand() % (frame_height - frame_boundary - hh));
-
-    if(random)
-    newWolf->setPos(randomX, randomY);
-    else {
-      newWolf->setPos(pos.x, pos.y);
-    }
-    newWolf->randomizeSpeed(-wolfSpeed, wolfSpeed);
-    newWolf->setDog(dog);
-
-    wolves.insert(newWolf);
-    allAnimals.insert(newWolf);
-  }
+  newAnimal->randomizeSpeed(-speed, speed);
 
   std::vector<std::shared_ptr<MovingObject>> preyList;
-  for(auto a : allAnimals)
-  {
-    if(a->hasTag("prey"))
+   for(auto a : allAnimals)
     {
-      preyList.push_back(a);
-    }
-  }
+     if(a->hasTag("prey"))
+     {
+       preyList.push_back(a);
+     }
+    }  
 
-  //Update all the hunters for now just wolf
-  for(auto w : wolves)
-  {
-    w->setPreyList(preyList);
-  }
+  // if(id == 0)
+  // {
+
+  //   std::shared_ptr<sheep> newSheep =
+  //     std::make_shared<sheep>(window_surface_ptr_, sheepSpritePath);
+  //   newSheep->setSize(animal_size, animal_size);
+  //   int hw = newSheep->getWidth();
+  //   int hh = newSheep->getHeight();
+  //   int randomX =  hw + frame_boundary + (std::rand() % (frame_width - frame_boundary - hw));
+  //   int randomY = hh + frame_boundary + (std::rand() % (frame_height - frame_boundary - hh));
+  //   if(random)
+  //   newSheep->setPos( randomX, randomY);
+  //   else
+  //     newSheep->setPos(pos.x, pos.y);
+
+  //   newSheep->randomizeSpeed(-sheepSpeed, sheepSpeed);
+
+  //   sheeps.insert(newSheep);
+  //   allAnimals.insert(newSheep);
+  // }
+  // else if(id == 1)
+  // {
+  //   std::shared_ptr<wolf> newWolf = std::make_shared<wolf>(window_surface_ptr_, wolfSpritePath);
+  //   newWolf->setSize(animal_size, animal_size);
+  //   int hw = newWolf->getWidth();
+  //   int hh = newWolf->getHeight();
+  //   int randomX =  hw + frame_boundary + (std::rand() % (frame_width - frame_boundary - hw));
+  //   int randomY = hh + frame_boundary + (std::rand() % (frame_height - frame_boundary - hh));
+
+  //   if(random)
+  //   newWolf->setPos(randomX, randomY);
+  //   else {
+  //     newWolf->setPos(pos.x, pos.y);
+  //   }
+  //   newWolf->randomizeSpeed(-wolfSpeed, wolfSpeed);
+  //   newWolf->setDog(dog);
+
+  //   wolves.insert(newWolf);
+  //   allAnimals.insert(newWolf);
+  // }
+
+  // std::vector<std::shared_ptr<MovingObject>> preyList;
+  // for(auto a : allAnimals)
+  // {
+  //   if(a->hasTag("prey"))
+  //   {
+  //     preyList.push_back(a);
+  //   }
+  // }
+
+  // //Update all the hunters for now just wolf
+  // for(auto w : wolves)
+  // {
+  //   w->setPreyList(preyList);
+  // }
 
 
 
@@ -460,7 +484,7 @@ void ground::add_new_animals()
   }
 
   for(auto v : addPositions){
-    add_animal(v.first, v.second);
+    //add_animal(v.first, v.second);
   }
 }
 
