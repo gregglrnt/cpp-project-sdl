@@ -26,18 +26,29 @@ IF(WIN32)
   target_link_libraries(SDL_part1 PUBLIC SDL2 SDL2main SDL2_image)
 ELSE()
   message(STATUS "Building for Linux or Mac")
-  set(CMAKE_CXX_STANDARD 20)
+  # message(STATUS "Building for Linux or Mac")
+  # set(CMAKE_CXX_STANDARD 20)
+
+  # add_executable(SDL_part1 main.cpp Project_SDL1.cpp)
+
+
+  # set(SDL2_LIB "/Library/Frameworks/SDL2.framework/SDL2")
+  # set(SDL2_image_LIB "/Library/Frameworks/SDL2_image.framework/SDL2_image")
+
+  # target_include_directories(SDL_part1 PRIVATE "/Library/Frameworks/SDL2.framework/Headers")
+  # target_include_directories(SDL_part1 PRIVATE "/Library/Frameworks/SDL2_image.framework/Headers")
+
+  # target_link_libraries(SDL_part1 ${SDL2_LIB} ${SDL2_image_LIB})
+  
+
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/sdl2")
+
+  find_package(SDL2 REQUIRED)
+  find_package(SDL2_image REQUIRED)
+  include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 
   add_executable(SDL_part1 main.cpp Project_SDL1.cpp)
-
-
-  set(SDL2_LIB "/Library/Frameworks/SDL2.framework/SDL2")
-  set(SDL2_image_LIB "/Library/Frameworks/SDL2_image.framework/SDL2_image")
-
-  target_include_directories(SDL_part1 PRIVATE "/Library/Frameworks/SDL2.framework/Headers")
-  target_include_directories(SDL_part1 PRIVATE "/Library/Frameworks/SDL2_image.framework/Headers")
-
-  target_link_libraries(SDL_part1 ${SDL2_LIB} ${SDL2_image_LIB})
+  target_link_libraries(SDL_part1 ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 
 ENDIF()
 
