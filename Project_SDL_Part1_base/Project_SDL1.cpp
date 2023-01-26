@@ -775,12 +775,17 @@ void wolf::move() {
   if(preyList.size() == 0) {
     //Boundary of the ground horizontal
     //Velocity is reversed with random bounce
+      //creating a random number between -wolfSpeed and wolfSpeed. This random number will be used to set the wolf's new speed when it hits the horizontal boundaries of the frame.
     int reboundrand = -wolfSpeed + (std::rand() % (2 * wolfSpeed));
+      //first check to see if the wolf's x position is greater than or equal to the frame's width minus the frame_boundary. If the condition is true, then the wolf is at the right edge of the frame and needs to reverse direction.
     if(x >= frame_width-frame_boundary)
     {
+        //sets the wolf's x position to be 2 pixels away from the right edge of the frame.
       x = frame_width-frame_boundary-2;
+        //sets the wolf's new speed, reversing the xSpeed and using the random number generated earlier for the ySpeed.
       setSpeed(-xSpeed, reboundrand);
     }
+      //This is a similar check as the previous one, but for the left edge of the frame. If the wolf's x position is less than or equal to the frame_boundary, then the wolf is at the left edge of the frame and needs to reverse direction.
     else if(x <= frame_boundary)
     {
       x = frame_boundary+2;
@@ -791,16 +796,22 @@ void wolf::move() {
     // Velocity is reversed with random bounce
     if(y >= frame_height-frame_boundary)
     {
+        //This line sets the wolf's y position to be 2 pixels away from the bottom edge of the frame.
       y = frame_height-frame_boundary-2;
+        //This line sets the wolf's new speed, using the random number generated earlier for the xSpeed and reversing the ySpeed.
       setSpeed(reboundrand, -ySpeed);
     }
+      //This is a similar check as the previous one, but for the left edge of the frame. If the wolf's x position is less than or equal to the frame_boundary, then the wolf is at the left edge of the frame and needs to reverse direction.
     else if(y <= frame_boundary)
     {
+        // sets the wolf's y position to be 2 pixels away from the bottom edge of the frame.
       y = frame_boundary + 2;
+        //sets the wolf's new speed, using the random number generated earlier for the xSpeed and reversing the ySpeed.
       setSpeed( reboundrand, -ySpeed);
     }
 
     //Set the position according to the speed
+      //this line sets the wolf's position according to its xSpeed and ySpeed.
     setPos(x+xSpeed, y+ySpeed);
 
     return;

@@ -28,21 +28,26 @@ constexpr int sheepSpeed = 2;
 constexpr int wolfSpeed = 1;
 constexpr int dogSpeed = 4;
 constexpr int playerSpeed = 4;
+//The radius of the circular path that the dog follows.
 constexpr int dogRadius = 40;
+//The rotation speed of the dog on its circular path.
 constexpr float dogRot = 0.01;
 
 constexpr char sheepSpritePath[] = "../media/sheep.png";
 constexpr char wolfSpritePath[] = "../media/wolf.png";
 constexpr char playerSpritePath[] = "../media/player.png";
 constexpr char dogSpritePath[] = "../media/dog.png";
-
+//the maximum number of animals (sheep and wolves) that can exist in the game at any one time
 constexpr int MAX_ANIMALS = 50;
-
+// HUNT_DISTANCE is the distance at which a wolf is close enough to a sheep to hunt it
 constexpr int HUNT_DISTANCE = 10;
+// INTERACT_DISTANCE is the distance at which a player or dog is close enough to interact with an animal
 constexpr int INTERACT_DISTANCE = 20;
+// BREED_MS is the time it takes for a sheep to breed after giving birth
 constexpr int BREED_MS = 4000;
-
+// STARVE_MS is the time it takes for a wolf to starve after it last hunted
 constexpr int STARVE_MS = 8000;
+// CLICK_DISTANCE is the distance within which a player's click on the screen will register as interacting with an animal.
 constexpr int CLICK_DISTANCE = 200;
 // Helper function to initialize SDL
 void init();
@@ -159,6 +164,7 @@ public:
       // Assigns the passed in list to the preyList variable. This effectively replaces the current list with the new one.
     preyList = list;
   }
+    //This function is likely used to set the dog object in the game with a new object, or to change the dog object that is currently being used.
   void setDog(std::shared_ptr<MovingObject> p)
   {
       dog = p;
