@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.24.2/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/papeibrahimadiawara/cpp-project-sdl/Project_SDL_Part1_base
+CMAKE_SOURCE_DIR = "/Users/papeibrahimadiawara/Downloads/Base_Project 2/Project_SDL_Part1_base/test"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/papeibrahimadiawara/cpp-project-sdl/Project_SDL_Part1_base
+CMAKE_BINARY_DIR = "/Users/papeibrahimadiawara/Downloads/Base_Project 2/Project_SDL_Part1_base/test"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/papeibrahimadiawara/cpp-project-sdl/Project_SDL_Part1_base/CMakeFiles /Users/papeibrahimadiawara/cpp-project-sdl/Project_SDL_Part1_base//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/papeibrahimadiawara/Downloads/Base_Project 2/Project_SDL_Part1_base/test/CMakeFiles" "/Users/papeibrahimadiawara/Downloads/Base_Project 2/Project_SDL_Part1_base/test//CMakeFiles/progress.marks"
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/papeibrahimadiawara/cpp-project-sdl/Project_SDL_Part1_base/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/papeibrahimadiawara/Downloads/Base_Project 2/Project_SDL_Part1_base/test/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target

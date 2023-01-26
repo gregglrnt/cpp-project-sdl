@@ -1,5 +1,0 @@
-/Users/papeibrahimadiawara/Downloads/Base_Project 2/CMakeFiles/edit_cache.dir
-/Users/papeibrahimadiawara/Downloads/Base_Project 2/CMakeFiles/rebuild_cache.dir
-/Users/papeibrahimadiawara/Downloads/Base_Project 2/Project_SDL_Part1_base/CMakeFiles/SDL_part1.dir
-/Users/papeibrahimadiawara/Downloads/Base_Project 2/Project_SDL_Part1_base/CMakeFiles/edit_cache.dir
-/Users/papeibrahimadiawara/Downloads/Base_Project 2/Project_SDL_Part1_base/CMakeFiles/rebuild_cache.dir

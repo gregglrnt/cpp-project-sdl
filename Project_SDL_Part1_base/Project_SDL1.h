@@ -101,9 +101,9 @@ public:
     }
     Vec2 getPos() {return {getX(), getY()};}
     int getDistTo(Vec2 pos) {
-      int p = pos.x - getX();
-      int q = pos.y - getY();
-      return std::sqrt( (p*p)+(q*q) );
+      int p = pos.x - getX(); //get the x cordinate difference between the current object and the given position
+      int q = pos.y - getY(); //get the y cordinate difference between the current object and the given position
+      return std::sqrt( (p*p)+(q*q) ); //calculates the euclidean distance using the formula √((x2-x1)² + (y2-y1)²) and return the result.
     }
 };
 
@@ -151,9 +151,12 @@ public:
   void interact(std::shared_ptr<Interactable> other) override;
 
   //TODO: Optimize with move
+    // Declares a function named "setPreyList" that takes in a parameter "list" which is a vector of shared pointers to MovingObjects.
   void setPreyList(std::vector<std::shared_ptr<MovingObject>> list)
   {
+      // Clears the current preyList vector
     preyList.clear();
+      // Assigns the passed in list to the preyList variable. This effectively replaces the current list with the new one.
     preyList = list;
   }
   void setDog(std::shared_ptr<MovingObject> p)
@@ -192,15 +195,17 @@ public:
       commandMode = true;
 
     }
+    // This function is called when the player gives a command to the dog using the mouse.
+    // The location parameter is the position on the screen where the player clicked
     void endCommand(Vec2 location)
     {
-      if(!commandMode) return;
-      if(moveCommand) return;
+      if(!commandMode) return; // If the dog is not currently in command mode, return and do nothing
+      if(moveCommand) return; // If the dog is already moving towards a command, return and do nothing
 
       std::cout << "Command ended" << std::endl;
       commandMode = false;
-      targetPos = location;
-      moveCommand = true;
+      targetPos = location; // Store the target position where the dog should move to
+      moveCommand = true; // Indicates that the dog should now move to the target position
     }
 };
 
